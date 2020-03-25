@@ -138,19 +138,19 @@ namespace CSV
                 Console.WriteLine();
             }
 
-            // 4. Upload the files to My FTP
-            //foreach (var student in students)
-            //{
+          //  4.Upload the files to My FTP
+            foreach (var student in students)
+            {
 
-            //    FTP.UploadFile(studentsCSVPath, student.FullPathUrl + "/students.csv");
-            //    FTP.UploadFile(studentsjsonPath, student.FullPathUrl + "/students.json");
-            //    FTP.UploadFile(studentsxmlPath, student.FullPathUrl + "/students.xml");
-                  
+                FTP.UploadFile(studentsCSVPath, student.FullPathUrl + "/students.csv");
+                FTP.UploadFile(studentsjsonPath, student.FullPathUrl + "/students.json");
+                FTP.UploadFile(studentsxmlPath, student.FullPathUrl + "/students.xml");
 
 
-            //}
-           
-           
+
+            }
+
+
             return;
 
            
