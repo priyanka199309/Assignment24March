@@ -142,11 +142,9 @@ namespace CSV
             foreach (var student in students)
             {
 
-                FTP.UploadFile(studentsCSVPath, student.FullPathUrl + "/students.csv");
-                FTP.UploadFile(studentsjsonPath, student.FullPathUrl + "/students.json");
-                FTP.UploadFile(studentsxmlPath, student.FullPathUrl + "/students.xml");
-
-
+                FTP.UploadFile(studentsCSVPath, Constants.FTP.BaseUrl + "/200429013 Priyanka Garg/students.csv");
+                FTP.UploadFile(studentsjsonPath, Constants.FTP.BaseUrl + "/200429013 Priyanka Garg/students.json");
+                FTP.UploadFile(studentsxmlPath, Constants.FTP.BaseUrl + "/200429013 Priyanka Garg/students.xml");
 
             }
 
