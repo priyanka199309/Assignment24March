@@ -6,12 +6,28 @@ using System.Text;
 using CSV.Models;
 using CSV.Models.Utilities;
 using System.Xml.Serialization;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
+
+using DocumentFormat.OpenXml.ExtendedProperties;
+using System.Drawing;
+using A = DocumentFormat.OpenXml.Drawing;
+using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
+using System.Data.OleDb;
 
 namespace CSV
 {
     class Program
     {
+
+
+        
+
+
+
         static void Main(string[] args)
         {
             Student myrecord = new Student { StudentId = "200429013", FirstName = "Priyanka", LastName = "Garg" };
@@ -40,15 +56,15 @@ namespace CSV
 
                     if (csvlines.Length != 2)
                     {
-                        Console.WriteLine("Error in CSV format");
+                       Console.WriteLine("Error in CSV format");
                     }
                     else
                     {
                         student.FromCSV(csvlines[1]);
-                        //Console.WriteLine("  \t Age of Student is: {0} ", student.age);
+                      Console.WriteLine("  \t Age of Student is: {0} ", student.age);
                     }
 
-                    Console.WriteLine("Found info file:");
+                  Console.WriteLine("Found info file:");
                 }
                 else
                 {
@@ -68,10 +84,10 @@ namespace CSV
                 }
                 else
                 {
-                    Console.WriteLine("Could not find image file:");
+                   Console.WriteLine("Could not find image file:");
                 }
 
-                Console.WriteLine("\t" + imageFilePath);
+              Console.WriteLine("\t" + imageFilePath);
 
                 students.Add(student);
                 Console.WriteLine(directory);
@@ -95,7 +111,7 @@ namespace CSV
             Console.WriteLine("  \t Maximum of Student age is: {0} ", maxage);
 
             //save to csv
-            //string studentsCSVPath = $@"/Users/pranavsharma/Desktop/BDAT Work/CSV-2/Content/Data/students.csv";
+           
             string studentsCSVPath = $"{Constants.Locations.DataFolder}//students.csv";
             //Establish a file stream to collect data from the response
             using (StreamWriter fs = new StreamWriter(studentsCSVPath))
@@ -106,6 +122,71 @@ namespace CSV
                 }
            
             }
+
+          
+            string studentsWordPath = $"{Constants.Locations.DataFolder}//students.docx";
+            //string studentsImagePath1 = $"{Constants.Locations.ImagesFolder}//images.jpg";
+         
+
+            // Create a document by supplying the filepath. 
+            using (WordprocessingDocument wordDocument =
+                WordprocessingDocument.Create(studentsWordPath, WordprocessingDocumentType.Document))
+            {
+                
+                    
+
+                    // Add a main document part. 
+                    MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
+                
+
+                // Create the document structure and add some text.
+                mainPart.Document = new Document();
+                Body body = mainPart.Document.AppendChild(new Body());
+                Paragraph para = body.AppendChild(new Paragraph());
+
+
+               
+
+                Run run = para.AppendChild(new Run());
+                
+                foreach (var student in students)
+                    {
+                    
+
+                    run.AppendChild(new Text("My name is :  "));
+                    //run.AppendChild(new Text(student.ToString()));
+                    run.AppendChild(new Text(student.FirstName.ToString()));
+                    run.AppendChild(new Text("  ,  "));
+
+                    run.AppendChild(new Text("My Student id is: "));
+                   
+                 
+                    run.AppendChild(new Text(student.StudentId.ToString()));
+                    run.AppendChild(new Text("  ,  "));
+                   
+
+
+                    run.AppendChild(new Break() { Type = BreakValues.Page });
+
+                    
+
+
+
+
+
+
+                }
+
+             
+             
+
+            }
+
+
+
+
+
+           
 
             string studentsjsonPath = $"{Constants.Locations.DataFolder}//students.json";
             //Establish a file stream to collect data from the response
@@ -119,15 +200,44 @@ namespace CSV
                 }
             }
 
-            //string studentsxmlPath = $"{Constants.Locations.DataFolder}//students.xml";
-            //XmlSerializer serializer = new XmlSerializer(typeof(Student));
-            //using (StreamWriter fs = new StreamWriter(studentsxmlPath))
-            //{
-            //    serializer.Serialize(fs, students);
-            //}
 
 
-          
+            string studentsExcelPath = $"{Constants.Locations.DataFolder}//students.xlsx";
+
+
+
+            SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.
+            Create(studentsExcelPath, SpreadsheetDocumentType.Workbook);
+
+            // Add a WorkbookPart to the document.
+            WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
+            workbookpart.Workbook = new DocumentFormat.OpenXml.Spreadsheet.Workbook();
+
+            // Add a WorksheetPart to the WorkbookPart.
+            WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
+            worksheetPart.Worksheet = new DocumentFormat.OpenXml.Spreadsheet.Worksheet(new DocumentFormat.OpenXml.Spreadsheet.SheetData());
+
+            // Add Sheets to the Workbook.
+            DocumentFormat.OpenXml.Spreadsheet.Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.
+                AppendChild<DocumentFormat.OpenXml.Spreadsheet.Sheets>(new DocumentFormat.OpenXml.Spreadsheet.Sheets());
+
+            // Append a new worksheet and associate it with the workbook.
+            DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet()
+            {
+                Id = spreadsheetDocument.WorkbookPart.
+                GetIdOfPart(worksheetPart),
+                SheetId = 1,
+                Name = "mySheet"
+            };
+            sheets.Append(sheet);
+            
+
+            workbookpart.Workbook.Save();
+
+
+            spreadsheetDocument.Close();
+
+
 
             string studentsxmlPath = $"{Constants.Locations.DataFolder}//students.xml";
             //Establish a file stream to collect data from the response
@@ -153,6 +263,7 @@ namespace CSV
 
            
         }
+
 
     }
 }
